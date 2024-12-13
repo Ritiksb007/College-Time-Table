@@ -1,7 +1,11 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, send_from_directory
 import json
+import os
 
 app = Flask(__name__)
+
+# Set the custom folder where the index.html is stored
+CUSTOM_HTML_FOLDER = os.path.abspath('')  # Root folder where index.html will be
 
 def get_timetable(file_path):
     try:
@@ -15,12 +19,13 @@ def get_timetable(file_path):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Serve the index.html from the custom folder (outside templates)
+    return send_from_directory(CUSTOM_HTML_FOLDER, 'index.html')
 
 @app.route('/timetable', methods=['GET'])
 def timetable():
     day = request.args.get('day')
-    file_path = "timetable.json"  # pls Replace this path with as per your system where you keep this file 
+    file_path = "timetable.json"  # Please replace this path with your actual file path
     timetable = get_timetable(file_path)
     if timetable and day in timetable:
         return jsonify(timetable[day])
